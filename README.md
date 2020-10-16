@@ -11,12 +11,12 @@ Nun brauchts noch einen MS-C-Compiler. Am einfachsten durch download von
 
 https://visualstudio.microsoft.com/de/thank-you-downloading-visual-studio/?sku=community
 
-dann die EXE mit dem Parameter --passive --add Microsoft.VisualStudio.Workload.NativeDesktop;includeRecommended in der Eingabeaufforderung starten. 
+dann die EXE mit dem Parameter --passive --norestart --add Microsoft.VisualStudio.Workload.NativeDesktop;includeRecommended in der Eingabeaufforderung starten. Beschreibung der Parameter von vs_community.exe: https://docs.microsoft.com/de-de/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2019.
 
 Beispiel:
 
 ```cmd
-.\vs_community__726831475.1582752798.exe --passive --add Microsoft.VisualStudio.Workload.NativeDesktop;includeRecommended
+.\vs_community__726831475.1582752798.exe --passive -- norestart --add Microsoft.VisualStudio.Workload.NativeDesktop;includeRecommended
 ```
 
 :exclamation: Wichtig: Nicht in der Powershell den Aufruf starten, sonst gibts Probleme mit dem angehängten ;includeRecommended!
