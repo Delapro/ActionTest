@@ -12,7 +12,7 @@ jobs:
     if: github.actor == github.event.repository.owner.login
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2    # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
     
     - name: Checkout harbour/core repo
       uses: actions/checkout@v2
