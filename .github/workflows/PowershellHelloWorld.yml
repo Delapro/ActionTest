@@ -8,6 +8,7 @@ jobs:
   build:
     runs-on: windows-latest
     
+    steps:
     - name: TestPowershell
       run: |
          Write-Host "Hallo Welt!"
