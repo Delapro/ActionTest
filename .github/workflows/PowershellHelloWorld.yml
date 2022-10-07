@@ -1,0 +1,14 @@
+# Test von Powershell im Runner
+name: PowershellHelloWorld
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    - name: TestPowershell
+      run: |
+         Write-Host "Hallo Welt!"
+         
