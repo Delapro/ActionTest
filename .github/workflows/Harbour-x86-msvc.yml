@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2019  # früher: windows-latest
     
     if: github.actor == github.event.repository.owner.login
     
