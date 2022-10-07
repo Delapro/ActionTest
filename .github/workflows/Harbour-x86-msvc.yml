@@ -1,3 +1,5 @@
+# Fassung für Microsoft C++ Compiler 32-Bit VS2019
+# Achtung es gibt bitbucket-Abhängigkeiten! https://bitbucket.org/lorenzodla...
 name: Harbour for Windows 32 using MSVC
 
 on:
