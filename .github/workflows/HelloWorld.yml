@@ -39,6 +39,6 @@ jobs:
           [System.Environment]::SetEnvironmentVariable('TIME', (get-date -Format 'yyyy_MM_dd'))
 
       - name: Ausgabe
-          run |
-            echo "Ausgabe"
-            echo ${{ steps.current-time.outputs.formattedTime }}
+        run: |
+          echo "Ausgabe"
+          echo ${{ steps.current-time.outputs.formattedTime }}
