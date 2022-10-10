@@ -1,0 +1,62 @@
+# Fassung für Microsoft C++ Compiler 32-Bit VS2019
+# Achtung es gibt bitbucket-Abhängigkeiten! https://bitbucket.org/lorenzodla...
+name: Harbour for Windows 64 using MSVC
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2019  # früher: windows-latest
+    
+    if: github.actor == github.event.repository.owner.login
+    
+    steps:
+    - name: Checkout harbour/core repo
+      uses: actions/checkout@v3   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
+      with:
+       repository: harbour/core
+       path: harbour
+
+    - name: Install dependencies
+      run: |
+         (new-object System.Net.WebClient).DownloadFile('https://bitbucket.org/lorenzodla/mod_harbour_actions_resources/downloads/OpenSSL-Win32.zip', 'C:\temp\OpenSSL-Win32.zip')
+         Expand-Archive -LiteralPath C:\temp\OpenSSL-Win32.zip -DestinationPath C:\OpenSSL -Force
+         (new-object System.Net.WebClient).DownloadFile('https://bitbucket.org/lorenzodla/mod_harbour_actions_resources/downloads/curl-7.54.0-win32-mingw.zip', 'C:\temp\curl-7.54.0-win32-mingw.zip')
+         Expand-Archive -LiteralPath C:\temp\curl-7.54.0-win32-mingw.zip -DestinationPath C:\curl -Force
+         
+    - name: Compile Harbour
+      shell: cmd
+      run: |
+        cd harbour
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+        set HB_BUILD_MODE=c
+        set HB_USER_PRGFLAGS=-l-
+        set HB_BUILD_CONTRIBS=
+        set HB_WITH_OPENSSL=C:\OpenSSL\include
+        set HB_WITH_CURL=C:\curl\include
+        set HB_STATIC_OPENSSL=yes
+        set HB_STATIC_CURL=yes
+        set HB_COMPILER=msvc64
+        win-make.exe
+        
+    - name: Create output folders
+      shell: cmd
+      run: |
+        mkdir output
+        mkdir output\bin
+        copy harbour\bin\win\msvc64\*.exe output\bin
+        mkdir output\lib
+        copy harbour\lib\win\msvc64\*.lib output\lib
+        mkdir output\include 
+        copy harbour\include output\include
+        
+    - name: Set Time Environmentvariable
+      run: [System.Environment]::SetEnvironmentVariable(TIME, (get-date -Format 'yyyy_MM_dd'))
+      
+    - name: Upload Harbour to artifact
+      uses: actions/upload-artifact@v2
+      with:
+       name: harbour_win64_msvc_${{ env.TIME }}
+       path: output
