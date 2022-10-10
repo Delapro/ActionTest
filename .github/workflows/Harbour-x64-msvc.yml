@@ -51,13 +51,16 @@ jobs:
         copy harbour\lib\win\msvc64\*.lib output\lib
         mkdir output\include 
         copy harbour\include output\include
-        
-    - name: Set Time Environmentvariable
+
+    - name: Set Date Variable
+      id: current-date
+      shell: pwsh
+      # Hinweis zum Durchreichen von Variablen: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-setting-a-value
       run: |
-        [System.Environment]::SetEnvironmentVariable('TIME', (get-date -Format 'yyyy_MM_dd'))
+        "::set-output name=DATE::$(get-date -Format 'yyyy_MM_dd')"
       
     - name: Upload Harbour to artifact
       uses: actions/upload-artifact@v3
       with:
-       name: harbour_win64_msvc_${{ env.TIME }}
+       name: harbour_win64_msvc_${{ steps.current-date.outputs.DATE }}
        path: output
