@@ -54,17 +54,16 @@ jobs:
         copy harbour\lib\win\msvc\*.lib output\lib
         mkdir output\include 
         copy harbour\include output\include
-        
-    - name: Get current time
-      uses: srfrnk/current-time@master
-      id: current-time
-      with:
-        format: YYYY_MM_DD
- 
+
+    - name: Set Date Variable
+      id: current-date
+      shell: pwsh
+      # Hinweis zum Durchreichen von Variablen: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-setting-a-value
+      run: |
+        "::set-output name=DATE::$(get-date -Format 'yyyy_MM_dd')"
+      
     - name: Upload Harbour to artifact
-      env:
-         TIME: "${{ steps.current-time.outputs.formattedTime }}"
       uses: actions/upload-artifact@v3
       with:
-       name: harbour_win32_msvc_${{ env.TIME }}
-       path: output
+        name: harbour_win32_msvc_${{ steps.current-date.outputs.DATE }}
+        path: output
