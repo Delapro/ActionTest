@@ -31,3 +31,14 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+
+      - name: Set Time Environmentvariable
+        id: current-time
+        shell: pwsh
+        run: |
+          [System.Environment]::SetEnvironmentVariable('TIME', (get-date -Format 'yyyy_MM_dd'))
+
+      - name: Ausgabe
+          run |
+            echo "Ausgabe"
+            echo ${{ steps.current-time.outputs.formattedTime }}
