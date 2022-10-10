@@ -54,7 +54,7 @@ jobs:
         
     - name: Set Time Environmentvariable
       run: |
-        [System.Environment]::SetEnvironmentVariable(TIME, (get-date -Format 'yyyy_MM_dd'))
+        [System.Environment]::SetEnvironmentVariable('TIME', (get-date -Format 'yyyy_MM_dd'))
       
     - name: Upload Harbour to artifact
       uses: actions/upload-artifact@v2
