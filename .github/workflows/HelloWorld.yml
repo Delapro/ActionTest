@@ -41,4 +41,4 @@ jobs:
       - name: Ausgabe
         run: |
           echo "Ausgabe"
-          echo ${{ steps.current-time.outputs.formattedTime }}
+          echo ${{ steps.current-time.outputs }}
