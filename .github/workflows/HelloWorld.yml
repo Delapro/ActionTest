@@ -35,11 +35,11 @@ jobs:
       - name: Set Time Environmentvariable
         id: current-time
         shell: pwsh
+        # Hinweis zum Durchreichen von Variablen: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-setting-a-value
         run: |
-          [System.Environment]::SetEnvironmentVariable('TIME', (get-date -Format 'yyyy_MM_dd'))
-          $env:TIME
+          "::set-output name=TIME::$(get-date -Format 'yyyy_MM_dd')"
 
       - name: Ausgabe
         run: |
           echo "Ausgabe"
-          echo ${{ steps.current-time.outputs }}
+          echo ${{ steps.current-time.outputs.TIME }}
