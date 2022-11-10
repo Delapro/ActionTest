@@ -12,4 +12,5 @@ jobs:
     - name: TestPowershell
       run: |
          Write-Host "Hallo Welt!"
+         $PSVersionTable
          
