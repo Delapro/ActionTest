@@ -70,7 +70,7 @@ jobs:
         # jetzt: echo "{name}={value}" >> $GITHUB_OUTPUT
         # siehe: https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
         # daraus resultiert:
-        "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $GITHUB_OUTPUT
+        echo "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $GITHUB_OUTPUT
       
     - name: Upload Harbour to artifact
       uses: actions/upload-artifact@v3
