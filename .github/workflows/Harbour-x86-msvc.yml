@@ -60,7 +60,8 @@ jobs:
       shell: pwsh
       # Hinweis zum Durchreichen von Variablen: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-setting-a-value
       run: |
-        "::set-output name=DATE::$(get-date -Format 'yyyy_MM_dd')"
+        # beachten: https://github.com/Delapro/ActionTest/blob/f21d421fbc2dd84db67b56b6879803542888b30f/.github/workflows/Harbour-x64-msvc.yml#L69
+        echo "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $env:GITHUB_OUTPUT
       
     - name: Upload Harbour to artifact
       uses: actions/upload-artifact@v3
