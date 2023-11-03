@@ -29,8 +29,8 @@ jobs:
     - name: Installing dependencies
       shell: cmd 
       run: |
-        vcpkg.exe install curl:x64-windows
-        vcpkg.exe install openssl:x64-windows
+        vcpkg.exe install curl --triplet x64-windows
+        vcpkg.exe install openssl --triplet x64-windows
         vcpkg integrate install
 
     - name: Compile Harbour
