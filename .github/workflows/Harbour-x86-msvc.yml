@@ -73,5 +73,5 @@ jobs:
     - name: Upload Harbour to artifact
       uses: actions/upload-artifact@v3
       with:
-        name: harbour_win32_msvc_${{ steps.current-date.outputs.DATE }}
+        name: harbour_win32_msvc_${{ steps.current-date.outputs.DATE }}.zip
         path: output
