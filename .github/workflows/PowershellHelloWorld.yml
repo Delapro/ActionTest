@@ -9,14 +9,15 @@ on:
   
 jobs:
   build:
-    runs-on: windows-latest
+    # runs-on: windows-latest
+    runs-on: ubuntu-latest
     
     steps:
       - name: Upgrade to latest powershell
         run: |
           Invoke-Expression "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -quiet"
-          "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
-        shell: powershell
+          # "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
+        # shell: powershell
         
       - name: TestPowershell
         run: |
