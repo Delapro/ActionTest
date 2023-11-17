@@ -16,6 +16,7 @@ jobs:
         run: |
           Invoke-Expression "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -quiet"
           "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
+        shell: powershell
         
       - name: TestPowershell
         run: |
