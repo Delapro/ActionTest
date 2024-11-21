@@ -5,6 +5,8 @@ TODO: Arm64 muss noch vollständig umgesetzt werden!
 
 Falls ein Workflow mal zu alt sein sollte und das zugehörige Artefakt nicht mehr verfügar ist, macht man einfach an einer Action eine minimale Änderungen. Dadurch wird die Erzeugung des Artefakts automatisch neu angestoßen.
 
+> Hinweis zu $GITHUB_OUTPUT: $GITHUB_OUTPUT muss für Powershell als $env:GITHUB_OUTPUT geschrieben werden!
+
 Man benötigt das Artefact aus diesem Workflow:
 
 https://github.com/Delapro/ActionTest/actions?query=workflow%3A%22Harbour+for+Windows+32+using+MSVC%22
