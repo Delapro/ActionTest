@@ -1,6 +1,8 @@
 # ActionTest
 Spielereien mit Github-Actions. Verfügbare Images mit der der hinterlegten Software findet man hier: https://github.com/actions/runner-images.
 
+TODO: Arm64 muss noch vollständig umgesetzt werden!
+
 Falls ein Workflow mal zu alt sein sollte und das zugehörige Artefakt nicht mehr verfügar ist, macht man einfach an einer Action eine minimale Änderungen. Dadurch wird die Erzeugung des Artefakts automatisch neu angestoßen.
 
 Man benötigt das Artefact aus diesem Workflow:
