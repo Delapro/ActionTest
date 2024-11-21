@@ -1,0 +1,83 @@
+# Vorbereitung auf ARM64, noch nicht vollständig!
+# Einstellungen beachten: https://github.com/harbour/core/commit/26849d3292aece302e02703ac27310d415db597a
+# Fassung für Microsoft C++ Compiler 64-Bit VS2022
+# Achtung es gibt bitbucket-Abhängigkeiten! https://bitbucket.org/lorenzodla...
+name: Harbour for Windows Arm64 using MSVC
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022  # früher: windows-latest, windows-2022 geht noch nicht, weil harbour noch VS2019 benötigt!
+    
+    if: github.actor == github.event.repository.owner.login
+    
+    steps:
+    - name: Checkout harbour/core repo
+      uses: actions/checkout@v4   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
+      with:
+       repository: harbour/core
+       path: harbour
+
+#    - name: Install dependencies
+#      run: |
+#         (new-object System.Net.WebClient).DownloadFile('https://bitbucket.org/lorenzodla/mod_harbour_actions_resources/downloads/OpenSSL-Win32.zip', 'C:\temp\OpenSSL-Win32.zip')
+#         Expand-Archive -LiteralPath C:\temp\OpenSSL-Win32.zip -DestinationPath C:\OpenSSL -Force
+#         (new-object System.Net.WebClient).DownloadFile('https://bitbucket.org/lorenzodla/mod_harbour_actions_resources/downloads/curl-7.54.0-win32-mingw.zip', 'C:\temp\curl-7.54.0-win32-mingw.zip')
+#         Expand-Archive -LiteralPath C:\temp\curl-7.54.0-win32-mingw.zip -DestinationPath C:\curl -Force
+
+    - name: Installing dependencies
+      shell: cmd 
+      run: |
+        vcpkg.exe install curl --triplet arm64-windows
+        vcpkg.exe install openssl --triplet arm64-windows
+        vcpkg integrate install
+
+    - name: Compile Harbour
+      shell: cmd
+      run: |
+        cd harbour
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsarm64.bat"
+        set HB_BUILD_MODE=c
+        set HB_USER_PRGFLAGS=-l-
+        set HB_BUILD_CONTRIBS=
+        # set HB_WITH_OPENSSL=C:\OpenSSL\include
+        set HB_WITH_OPENSSL=c:\vcpkg\packages\openssl-windows_arm64-windows\include\
+        # set HB_WITH_CURL=C:\curl\include
+        set HB_WITH_CURL=c:\vcpkg\packages\curl_arm64-windows\include
+        set HB_STATIC_OPENSSL=yes
+        set HB_STATIC_CURL=yes
+        set HB_COMPILER=msvcarm64
+        win-make.exe
+        
+    - name: Create output folders
+      shell: cmd
+      run: |
+        mkdir output
+        mkdir output\bin
+        copy harbour\bin\win\msvc64\*.exe output\bin
+        mkdir output\lib
+        copy harbour\lib\win\msvc64\*.lib output\lib
+        mkdir output\include 
+        copy harbour\include output\include
+
+    - name: Set Date Variable
+      id: current-date
+      shell: pwsh
+      # Hinweis zum Durchreichen von Variablen: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-setting-a-value
+      run: |
+        # früher: "::set-output name=DATE::$(get-date -Format 'yyyy_MM_dd')"
+        # jetzt: echo "{name}={value}" >> $GITHUB_OUTPUT
+        # siehe: https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
+        # alles nicht so einfach, siehe: https://stackoverflow.com/a/74444094
+        # daraus resultiert:
+        echo "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $env:GITHUB_OUTPUT
+      
+    - name: Upload Harbour to artifact
+      uses: actions/upload-artifact@v4
+      with:
+       name: harbour_win64_msvc_${{ steps.current-date.outputs.DATE }}
+       path: output
+       
