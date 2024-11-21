@@ -40,7 +40,7 @@ jobs:
       run: |
         cd harbour
         dir "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\"
-        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         set HB_BUILD_MODE=c
         set HB_USER_PRGFLAGS=-l-
         set HB_BUILD_CONTRIBS=
@@ -50,12 +50,21 @@ jobs:
         set HB_WITH_CURL=c:\vcpkg\packages\curl_arm64-windows\include
         set HB_STATIC_OPENSSL=yes
         set HB_STATIC_CURL=yes
+        set HB_COMPILER=msvc64
+        win-make.exe
+        echo "Neustart ARM64"
         set HB_COMPILER=msvcarm64
+        set HB_HOST_BIN=harbour\bin\win\msvc64
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsamd64_arm64.bat"
         win-make.exe
         
     - name: Create output folders
       shell: cmd
       run: |
+        echo "msvc64:"
+        dir harbour\bin\win\msvc64
+        echo "ms*:"
+        dir harbour\bin\win\ms*
         mkdir output
         mkdir output\bin
         copy harbour\bin\win\msvc64\*.exe output\bin
