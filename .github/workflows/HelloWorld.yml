@@ -39,7 +39,7 @@ jobs:
         run: |
           # früher: "::set-output name=TIME::$(get-date -Format 'yyyy_MM_dd')"
           # wichtig: $GITHUB_OUTPUT muss als $env:GITHUB_OUTPUT geschrieben werden
-          "{TIME}={$(get-date -Format 'yyyy_MM_dd')}" >> $env:GITHUB_OUTPUT
+          "TIME=$(get-date -Format 'yyyy_MM_dd')" >> $env:GITHUB_OUTPUT
 
       - name: Ausgabe
         run: |
