@@ -14,10 +14,10 @@ jobs:
     if: github.actor == github.event.repository.owner.login
     
     steps:
-    - uses: actions/checkout@v3    # bezieht sich auf https://github.com/actions/checkout/releases/tag/v3
+    - uses: actions/checkout@v4    # bezieht sich auf https://github.com/actions/checkout/releases/tag/v4
     
     - name: Checkout harbour/core repo
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
        repository: harbour/core
        path: harbour
@@ -71,7 +71,7 @@ jobs:
         echo "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $env:GITHUB_OUTPUT
       
     - name: Upload Harbour to artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: harbour_win32_msvc_${{ steps.current-date.outputs.DATE }}.zip
         path: output
