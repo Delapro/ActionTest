@@ -16,7 +16,7 @@ jobs:
     
     steps:
     - name: Checkout harbour/core repo
-      uses: actions/checkout@v4   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
+      uses: actions/checkout@v5   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
       with:
        repository: harbour/core
        path: harbour
