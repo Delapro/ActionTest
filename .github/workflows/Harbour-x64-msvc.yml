@@ -26,6 +26,27 @@ jobs:
 #         (new-object System.Net.WebClient).DownloadFile('https://bitbucket.org/lorenzodla/mod_harbour_actions_resources/downloads/curl-7.54.0-win32-mingw.zip', 'C:\temp\curl-7.54.0-win32-mingw.zip')
 #         Expand-Archive -LiteralPath C:\temp\curl-7.54.0-win32-mingw.zip -DestinationPath C:\curl -Force
 
+    - name: Preflight MSVC
+      shell: cmd
+      run: |
+        for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALLDIR=%%i"
+    
+        echo VSINSTALLDIR=%VSINSTALLDIR%
+    
+        dir "%VSINSTALLDIR%\VC\Auxiliary\Build"
+        dir "%VSINSTALLDIR%\VC\Tools\MSVC"
+    
+        call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat" || exit /b 1
+    
+        echo PATH=%PATH%
+        echo VCToolsInstallDir=%VCToolsInstallDir%
+        echo VCINSTALLDIR=%VCINSTALLDIR%
+        echo INCLUDE=%INCLUDE%
+        echo LIB=%LIB%
+    
+        where cl.exe || exit /b 1
+        cl.exe /Bv || exit /b 1
+
     - name: Installing dependencies
       shell: cmd 
       run: |
