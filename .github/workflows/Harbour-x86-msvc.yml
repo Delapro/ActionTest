@@ -56,15 +56,34 @@ jobs:
     - name: Installing dependencies
       shell: cmd 
       run: |
-        vcpkg.exe install curl --triplet x86-windows-static
-        vcpkg.exe install openssl --triplet x86-windows-static
-        vcpkg integrate install
+        vcpkg.exe install curl[openssl]:x86-windows-static openssl:x86-windows-static
         
     - name: Compile Harbour
       shell: cmd
       run: |
         cd harbour
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x86
+
+        for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvarsamd64_x86.bat`) do set "VCVARSX86=%%i"
+    
+        echo VCVARSX86=%VCVARSX86%
+    
+        if not exist "%VCVARSX86%" (
+          echo vcvarsamd64_x86.bat not found
+          exit /b 1
+        )
+    
+        set "VSINSTALLDIR="
+        set "VCINSTALLDIR="
+        set "VCToolsInstallDir="
+    
+        call "%VCVARSX86%" || exit /b 1
+    
+        echo VSINSTALLDIR=%VSINSTALLDIR%
+        echo VCINSTALLDIR=%VCINSTALLDIR%
+        echo VCToolsInstallDir=%VCToolsInstallDir%
+    
+        where cl.exe || exit /b 1
+        
         set HB_BUILD_MODE=c
         set HB_USER_PRGFLAGS=-l-
         set HB_BUILD_CONTRIBS=
