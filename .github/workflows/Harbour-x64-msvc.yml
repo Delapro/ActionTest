@@ -29,31 +29,33 @@ jobs:
     - name: Preflight MSVC
       shell: cmd
       run: |
-        for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALLDIR=%%i"
+        for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS64=%%i"
+    
+        echo VCVARS64=%VCVARS64%
+    
+        if not exist "%VCVARS64%" (
+          echo vcvars64.bat not found
+          exit /b 1
+        )
+    
+        set "VSINSTALLDIR="
+        set "VCINSTALLDIR="
+        set "VCToolsInstallDir="
+    
+        call "%VCVARS64%" || exit /b 1
     
         echo VSINSTALLDIR=%VSINSTALLDIR%
-    
-        dir "%VSINSTALLDIR%\VC\Auxiliary\Build"
-        dir "%VSINSTALLDIR%\VC\Tools\MSVC"
-    
-        call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvars64.bat" || exit /b 1
-    
-        echo PATH=%PATH%
-        echo VCToolsInstallDir=%VCToolsInstallDir%
         echo VCINSTALLDIR=%VCINSTALLDIR%
-        echo INCLUDE=%INCLUDE%
-        echo LIB=%LIB%
+        echo VCToolsInstallDir=%VCToolsInstallDir%
     
         where cl.exe || exit /b 1
         cl.exe /Bv || exit /b 1
-
+        
     - name: Installing dependencies
       shell: cmd 
       run: |
-        vcpkg.exe install curl --triplet x64-windows
-        vcpkg.exe install openssl --triplet x64-windows
-        #vcpkg.exe install curl --triplet x64-windows-static
-        #vcpkg.exe install openssl --triplet x64-windows-static
+        vcpkg.exe install curl --triplet x64-windows-static
+        vcpkg.exe install openssl --triplet x64-windows-static
         vcpkg integrate install
 
     - name: Compile Harbour
@@ -72,11 +74,11 @@ jobs:
         set HB_USER_PRGFLAGS=-l-
         set HB_BUILD_CONTRIBS=
         REM set HB_WITH_OPENSSL=C:\OpenSSL\include
-        REM set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows-static\include
-        set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows\include
+        set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows-static\include
+        REM set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows\include
         REM set HB_WITH_CURL=C:\curl\include
-        REM set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows-static\include
-        set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows\include
+        set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows-static\include
+        REM set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows\include
         set HB_STATIC_OPENSSL=yes
         set HB_STATIC_CURL=yes
         set HB_COMPILER=msvc64
