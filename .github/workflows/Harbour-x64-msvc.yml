@@ -49,7 +49,7 @@ jobs:
         echo VCToolsInstallDir=%VCToolsInstallDir%
     
         where cl.exe || exit /b 1
-        cl.exe /Bv || exit /b 1
+        REM cl.exe /Bv || exit /b 1
         
     - name: Installing dependencies
       shell: cmd 
@@ -63,12 +63,11 @@ jobs:
       run: |
         cd harbour
 
-        for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALLDIR=%%i"
-        echo VSINSTALLDIR=%VSINSTALLDIR%
-        call "%VSINSTALLDIR%\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 || exit /b 1
-
-        where cl || exit /b 1
-        cl /Bv || exit /b 1
+        for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS64=%%i"
+        call "%VCVARS64%" || exit /b 1
+        where cl.exe || exit /b 1
+    
+        REM cl /Bv || exit /b 1
 
         set HB_BUILD_MODE=c
         set HB_USER_PRGFLAGS=-l-
