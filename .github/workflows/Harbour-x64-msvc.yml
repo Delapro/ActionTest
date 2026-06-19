@@ -122,18 +122,40 @@ jobs:
     
         ..\bin\win\msvc64\hbmk2.exe -info -trace -width=0 -static hello.prg
         set HBMK_RC=%ERRORLEVEL%
+        echo hbmk2 rc=%HBMK_RC%
     
-        if exist hello.exe (
-          echo hello.exe was created despite hbmk2 rc=%HBMK_RC%
-          hello.exe > hello.out || exit /b 1
-          type hello.out
-          findstr /C:"Hello, world!" hello.out || exit /b 1
-          exit /b 0
+        if not "%HBMK_RC%"=="0" (
+          echo hbmk2 failed
+          dir
+          exit /b %HBMK_RC%
         )
     
-        echo hbmk2 failed with rc=%HBMK_RC%
-        dir
-        exit /b %HBMK_RC%
+        if not exist hello.exe (
+          echo hello.exe was not created
+          dir
+          exit /b 1
+        )
+    
+        echo Running hello.exe...
+        hello.exe > hello.out 2> hello.err
+        set HELLO_RC=%ERRORLEVEL%
+    
+        echo hello.exe rc=%HELLO_RC%
+    
+        echo ---- hello.out ----
+        if exist hello.out type hello.out
+    
+        echo ---- hello.err ----
+        if exist hello.err type hello.err
+    
+        if not "%HELLO_RC%"=="0" (
+          echo hello.exe failed
+          exit /b %HELLO_RC%
+        )
+    
+        findstr /C:"Hello, world!" hello.out || exit /b 1
+    
+        echo Smoke test OK
     
     - name: Harbour regression test hbtest
       if: ${{ inputs.run_regression_tests }}
