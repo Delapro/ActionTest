@@ -14,7 +14,7 @@ jobs:
     
     steps:
     - name: Checkout harbour/core repo
-      uses: actions/checkout@v4   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v2
+      uses: actions/checkout@v6   # bezieht sich auf https://github.com/actions/checkout/releases/tag/v6
       with:
        repository: harbour/core
        path: harbour
@@ -39,23 +39,27 @@ jobs:
       shell: cmd
       run: |
         cd harbour
+
         for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALLDIR=%%i"
         echo VSINSTALLDIR=%VSINSTALLDIR%
-        call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" amd64
+        call "%VSINSTALLDIR%\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64 || exit /b 1
+
+        where cl || exit /b 1
+        cl /Bv || exit /b 1
+
         set HB_BUILD_MODE=c
         set HB_USER_PRGFLAGS=-l-
         set HB_BUILD_CONTRIBS=
-        # set HB_WITH_OPENSSL=C:\OpenSSL\include
-        # set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows-static\include
+        REM set HB_WITH_OPENSSL=C:\OpenSSL\include
+        REM set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows-static\include
         set HB_WITH_OPENSSL=C:\vcpkg\packages\openssl-windows_x64-windows\include
-        # set HB_WITH_CURL=C:\curl\include
-        # set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows-static\include
+        REM set HB_WITH_CURL=C:\curl\include
+        REM set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows-static\include
         set HB_WITH_CURL=C:\vcpkg\packages\curl_x64-windows\include
         set HB_STATIC_OPENSSL=yes
         set HB_STATIC_CURL=yes
         set HB_COMPILER=msvc64
-        where cl
-        cl /Bv
+
         win-make.exe
     
     - name: Create output folders
@@ -82,7 +86,7 @@ jobs:
         echo "DATE=$(get-date -Format 'yyyy_MM_dd')" >> $env:GITHUB_OUTPUT
       
     - name: Upload Harbour to artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
        name: harbour_win64_msvc_${{ steps.current-date.outputs.DATE }}
        path: output
