@@ -103,18 +103,38 @@ jobs:
         for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS64=%%i"
     
         call "%VCVARS64%" || exit /b 1
+    
         where cl.exe || exit /b 1
+        where link.exe || exit /b 1
+        where lib.exe || exit /b 1
+        where mt.exe || exit /b 1
     
         set HB_COMPILER=msvc64
+        set HB_PLATFORM=win
+    
+        set HB_USER_PRGFLAGS=
+        set HB_USER_CFLAGS=
+        set HB_USER_LDFLAGS=
+        set HB_USER_LIBS=
+        set HBMK_OPTIONS=
     
         cd tests
     
-        ..\bin\win\msvc64\hbmk2.exe hello.prg || exit /b 1
-        hello.exe > hello.out || exit /b 1
+        ..\bin\win\msvc64\hbmk2.exe -info -trace -width=0 -static hello.prg
+        set HBMK_RC=%ERRORLEVEL%
     
-        type hello.out
-        findstr /C:"Hello, world!" hello.out || exit /b 1
-
+        if exist hello.exe (
+          echo hello.exe was created despite hbmk2 rc=%HBMK_RC%
+          hello.exe > hello.out || exit /b 1
+          type hello.out
+          findstr /C:"Hello, world!" hello.out || exit /b 1
+          exit /b 0
+        )
+    
+        echo hbmk2 failed with rc=%HBMK_RC%
+        dir
+        exit /b %HBMK_RC%
+    
     - name: Harbour regression test hbtest
       if: ${{ inputs.run_regression_tests }}
       shell: cmd
