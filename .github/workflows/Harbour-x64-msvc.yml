@@ -4,7 +4,18 @@ name: Harbour for Windows 64 using MSVC
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      run_smoke_tests:
+        description: "Compile and run tests/hello.prg"
+        required: false
+        default: true
+        type: boolean
+      run_regression_tests:
+        description: "Build and run utils/hbtest regression suite"
+        required: false
+        default: false
+        type: boolean
+            
 jobs:
   build:
     runs-on: windows-2025-vs2026  # früher: windows-latest, windows-2022 geht
@@ -82,6 +93,51 @@ jobs:
         set HB_COMPILER=msvc64
 
         win-make.exe
+
+    - name: Smoke test Harbour hello.prg
+      if: ${{ inputs.run_smoke_tests }}
+      shell: cmd
+      run: |
+        cd harbour
+    
+        for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS64=%%i"
+    
+        call "%VCVARS64%" || exit /b 1
+        where cl.exe || exit /b 1
+    
+        set HB_COMPILER=msvc64
+    
+        cd tests
+    
+        ..\bin\win\msvc64\hbmk2.exe hello.prg || exit /b 1
+        hello.exe > hello.out || exit /b 1
+    
+        type hello.out
+        findstr /C:"Hello, world!" hello.out || exit /b 1
+
+    - name: Harbour regression test hbtest
+      if: ${{ inputs.run_regression_tests }}
+      shell: cmd
+      run: |
+        cd harbour
+    
+        for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find VC\Auxiliary\Build\vcvars64.bat`) do set "VCVARS64=%%i"
+    
+        call "%VCVARS64%" || exit /b 1
+        where cl.exe || exit /b 1
+    
+        set HB_COMPILER=msvc64
+    
+        cd utils\hbtest
+    
+        ..\..\bin\win\msvc64\hbmk2.exe hbtest.hbp -o"%TEMP%\hbtest" || exit /b 1
+    
+        "%TEMP%\hbtest.exe" > "%TEMP%\hbtest.out" 2>&1
+        set HBTEST_RC=%ERRORLEVEL%
+    
+        type "%TEMP%\hbtest.out"
+    
+        exit /b %HBTEST_RC%
     
     - name: Create output folders
       shell: cmd
