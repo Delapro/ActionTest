@@ -120,7 +120,7 @@ jobs:
     
         cd tests
     
-        ..\bin\win\msvc64\hbmk2.exe -info -trace -width=0 -static hello.prg
+        ..\bin\win\msvc64\hbmk2.exe -info -trace -width=0 -static -gtstd hello.prg
         set HBMK_RC=%ERRORLEVEL%
         echo hbmk2 rc=%HBMK_RC%
     
